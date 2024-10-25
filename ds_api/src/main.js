@@ -1,11 +1,20 @@
+const mongoose = require('mongoose')
 const express = require('express')
+const cors = require('cors')
+require('dotenv').config()
+
+const modules = require('./modules')
+const port = process.env.APP_PORT
 const app = express()
-const port = 3000
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.use(cors())
+app.use(express.json())
+app.use('/api/v1', modules)
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  
+  await mongoose.connect(`${process.env.APP_MONGODB_URI}`, {
+    useNewUrlParser: true,
+  });
   console.log(`Example app listening on port ${port}`)
 })
