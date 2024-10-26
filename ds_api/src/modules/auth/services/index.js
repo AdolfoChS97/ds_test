@@ -66,7 +66,7 @@ async function createOrUpdateSession(userId, accessToken, refreshToken) {
 
 async function removeSession(refreshToken) {
     try {
-        const session = await Session.findOneAndUpdate({ refreshToken });
+        const session = await Session.findOne({ refreshToken, deletedAt: null });
         if (!session) {
             const error = new Error('Session not found or already logged out');
             error.status = INTERNAL_SERVER_ERROR;
