@@ -21,6 +21,20 @@ const registerSchema = Joi.object({
     })
 })
 
+const loginSchema = Joi.object({
+    email: Joi.string().email().required().messages({
+        'string.base': 'Email must be a string',
+        'string.empty': 'Email cannot be an empty field',
+        'string.email': 'Email must be a valid email',
+    }),
+    password: Joi.string().required().min(8).messages({
+        'string.base': 'Password must be a string',
+        'string.empty': 'Password cannot be an empty field',
+        'string.min': 'Password must be at least 8 characters long',
+    }),
+})
+
 module.exports = {
-    registerSchema
+    registerSchema,
+    loginSchema
 }
