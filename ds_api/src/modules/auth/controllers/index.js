@@ -1,5 +1,5 @@
 const _ = require('underscore')
-const { create, authenticate  } = require('../services')
+const { create, authenticate, removeSession  } = require('../services')
 const { registerSchema, loginSchema, logoutSchema } = require('../validators')
 const { CREATED, INTERNAL_SERVER_ERROR, SUCCESS } = require('../../../shared/constants')
 const handleValidationErrors = require('../../../utils/handleValidationErrors')
@@ -28,8 +28,8 @@ async function logout(req, res) {
     try {
         const body = req.body;
         await handleValidationErrors(await logoutSchema.validate({...body}, { abortEarly: false }))
-        
-        // return res.status(SUCCESS).json({ data: null, message: 'User logged out successfully', code: 0 })
+        await removeSession(body.refreshToken)
+        return res.status(SUCCESS).json({ data: null, message: 'User logged out successfully', code: 0 })
     } catch (e) {
         return res.status(e?.status || INTERNAL_SERVER_ERROR).json({ error: e.details, message: e.message, code: e?.code })
     }

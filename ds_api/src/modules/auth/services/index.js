@@ -29,7 +29,7 @@ async function authenticate({ email, password }) {
         }
 
         if(!await comparePassword(password, user.password)) {
-            const error = new Error('Wrong password')
+            const error = new Error('Invalid credetials')
             error.status = UNAUTHORIZED
             error.code = 1
             throw error
@@ -43,16 +43,15 @@ async function authenticate({ email, password }) {
         return { accessToken, refreshToken }
     } catch (e) {
         const error = new Error(e?.message)
-        error.status = INTERNAL_SERVER_ERROR
+        error.status = e.status || INTERNAL_SERVER_ERROR
         error.code = 1
         throw error
     }
 }
 async function createOrUpdateSession(userId, accessToken, refreshToken) {
     try {
-        // Check if there's an existing session for this user
         const session = await Session.findOneAndUpdate(
-            { user: userId },
+            { user: userId, deletedAt: null },
             { $set: { refreshToken, accessToken, updatedAt: new Date() } },
             { new: true, upsert: true }
         );
@@ -65,8 +64,26 @@ async function createOrUpdateSession(userId, accessToken, refreshToken) {
     }
 }
 
+async function removeSession(refreshToken) {
+    try {
+        const session = await Session.findOneAndUpdate({ refreshToken });
+        if (!session) {
+            const error = new Error('Session not found or already logged out');
+            error.status = INTERNAL_SERVER_ERROR;
+            throw error;
+        }
+        await Session.updateOne({ _id: session._id }, { $set: { deletedAt: new Date() } });
+    } catch (e) {
+        const error = new Error(e?.message || 'Error removing session');
+        error.status = e.status || INTERNAL_SERVER_ERROR;
+        error.code = 1;
+        throw error;
+    }
+}
+
 
 module.exports = {
     create,
     authenticate,
+    removeSession
 }
