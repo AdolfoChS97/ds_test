@@ -1,7 +1,7 @@
 const _ = require('underscore')
 const { create, authenticate  } = require('../services')
-const { registerSchema, loginSchema } = require('../validators')
-const { CREATED, INTERNAL_SERVER_ERROR } = require('../../../shared/constants')
+const { registerSchema, loginSchema, logoutSchema } = require('../validators')
+const { CREATED, INTERNAL_SERVER_ERROR, SUCCESS } = require('../../../shared/constants')
 const handleValidationErrors = require('../../../utils/handleValidationErrors')
 
 async function register(req, res){
@@ -19,12 +19,21 @@ async function login(req, res) {
         const credentials = req.body
         await handleValidationErrors(await loginSchema.validate({...credentials}, { abortEarly: false }))
         const token = await authenticate(credentials)
-        return res.status(200).json({ data: token, message: 'User authenticated successfully', code: 0 })
+        return res.status(SUCCESS).json({ data: token, message: 'User authenticated successfully', code: 0 })
     } catch (e) {
         return res.status(e?.status || INTERNAL_SERVER_ERROR).json({ error: e.details, message: e.message, code: e?.code })
     }
 }
-async function logout(req, res) {}
+async function logout(req, res) {
+    try {
+        const body = req.body;
+        await handleValidationErrors(await logoutSchema.validate({...body}, { abortEarly: false }))
+        
+        // return res.status(SUCCESS).json({ data: null, message: 'User logged out successfully', code: 0 })
+    } catch (e) {
+        return res.status(e?.status || INTERNAL_SERVER_ERROR).json({ error: e.details, message: e.message, code: e?.code })
+    }
+}
 
 
 module.exports = {

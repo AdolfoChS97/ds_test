@@ -34,7 +34,15 @@ const loginSchema = Joi.object({
     }),
 })
 
+const logoutSchema = Joi.object({
+    refreshToken: Joi.string().required().messages({
+        'string.base': 'Refresh token must be a string',
+        'string.empty': 'Refresh token cannot be an empty field',
+    }),
+})
+
 module.exports = {
     registerSchema,
-    loginSchema
+    loginSchema, 
+    logoutSchema
 }

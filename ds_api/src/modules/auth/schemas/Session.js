@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const Session = new mongoose.Schema({
+    
+    accessToken: {
+        type: String,
+        required: true
+    },
     refreshToken: {
         type: String,
         required: true
@@ -24,4 +29,4 @@ const Session = new mongoose.Schema({
     }
 })
 
-module.exports = Session
+module.exports = mongoose.model('Session', Session);
