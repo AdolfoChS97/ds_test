@@ -23,6 +23,10 @@ const Content = new mongoose.Schema({
         ref: 'Theme',
         required: true
     },
+    credits: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

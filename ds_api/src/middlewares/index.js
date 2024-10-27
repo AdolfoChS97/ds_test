@@ -27,13 +27,18 @@ function can(req, res, next) {
         const { user } = req.locals
         if(permissions[user.role] === ALL_ACCESS) {
             next()
+        } else if(
+            permissions[user.role] && 
+            permissions[user.role].allowedMethod.includes(req.method) && 
+            permissions[user.role].allowedPaths.includes(req.path)
+        ) {
+            next()
         } else {
-           const error = new Error('Cant perform this action')
+            const error = new Error('You do not have permission to performs this action')
             error.status = FORBIDDEN
             error.code = 1
             throw error
         }
-        // next()       
     } catch (e) {
         res.status(e?.status || UNAUTHORIZED).json({ message: e.message, code: e?.code || 1 })
     }

@@ -4,11 +4,11 @@ const router = express.Router()
 const { can, authorize } = require('../../middlewares')
 const { getContent, saveContent, createTheme, setTypeOfThemeContent } = require('./controllers')
 
-router.get('/', [authorize, can], async (req, res) => {
+router.get('/content', [authorize, can], async (req, res) => {
     return await getContent(req, res)    
 })
 
-router.post('/', async (req, res) => {
+router.post('/content', [authorize, can], async (req, res) => {
     return await saveContent(req, res)
 })
 
