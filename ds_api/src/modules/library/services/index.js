@@ -5,10 +5,7 @@ const {
     CONFLICT, 
     INTERNAL_SERVER_ERROR, 
     NOT_FOUND, 
-    BAD_REQUEST,
-    BASE64_IMG_REGEX,
-    BASE64_TXT_REGEX,
-    BASE64_VIDEO_REGEX, 
+    BAD_REQUEST, 
     contentTable
 } = require('../../../shared/constants')
 
