@@ -5,10 +5,14 @@ const INTERNAL_SERVER_ERROR = 500
 const CREATED = 201
 const SUCCESS = 200
 const UNAUTHORIZED = 401
+const FORBIDDEN = 403
 const OK = 'OK'
 const ISO_8601_REGEX = new RegExp('^\\d{4}-\\d{2}-\\d{2}$')
+const ALL_ACCESS = '*'
+const BASE64_IMG_REGEX = /^data:image\/(jpeg|png|gif|bmp|webp);base64,[A-Za-z0-9+/]+(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
 
 module.exports = {
+    BASE64_IMG_REGEX,
     BAD_REQUEST,
     INTERNAL_SERVER_ERROR,
     SUCCESS,
@@ -17,5 +21,7 @@ module.exports = {
     UNAUTHORIZED,
     OK,
     CONFLICT,
-    ISO_8601_REGEX
+    ISO_8601_REGEX, 
+    ALL_ACCESS,
+    FORBIDDEN
 }
