@@ -1,6 +1,5 @@
 import axios from 'axios';
 import type { AuthProvider } from "@refinedev/core";
-console.log(import.meta.env);
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
 
