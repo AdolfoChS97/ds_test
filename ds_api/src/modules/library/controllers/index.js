@@ -1,7 +1,7 @@
-const { createThemeSchema, setTypeOfThemeContentSchema } = require('../validators')
-const { INTERNAL_SERVER_ERROR, SUCCESS, CONFLICT } = require('../../../shared/constants')
+const { saveTheme, setTypeOfContent, saveThemeContent, getThemesContent } = require('../services')
 const handleValidationErrors = require('../../../utils/handleValidationErrors')
-const { saveTheme, setTypeOfContent } = require('../services')
+const { INTERNAL_SERVER_ERROR, SUCCESS, CONFLICT } = require('../../../shared/constants')
+const { createThemeSchema, setTypeOfThemeContentSchema, saveContentSchema } = require('../validators')
 
 async function createTheme(req, res) {
     try {
@@ -34,10 +34,23 @@ async function setTypeOfThemeContent(req, res) {
 }
 
 async function getContent(req, res){
-    return res.status(SUCCESS).json({ data: 'content', message: 'Content fetched successfully', code: 0 })
+    try {
+        const list = await getThemesContent()
+        return res.status(SUCCESS).json({ data: list, message: 'Content fetched successfully', code: 0 })
+    } catch (e) {
+        return res.status(e?.status || INTERNAL_SERVER_ERROR).json({ error: e.details, message: e.message, code: e?.code })
+    }
 }
 async function saveContent(req, res){
-    return res.status(SUCCESS).json({ data: 'content', message: 'Content saved successfully', code: 0 })
+    try {
+        const body = req.body
+        const postOwner = req.locals.user.username
+        await handleValidationErrors(await saveContentSchema.validate({...body}, { abortEarly: false }))
+        const content = await saveThemeContent({ ...body }, postOwner)
+        return res.status(SUCCESS).json({ data: content, message: 'Content saved successfully', code: 0 })
+    } catch (e) {
+        return res.status(e?.status || INTERNAL_SERVER_ERROR).json({ error: e.details, message: e.message, code: e?.code })
+    }
 }
 
 module.exports = {

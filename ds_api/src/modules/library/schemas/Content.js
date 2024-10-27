@@ -11,7 +11,7 @@ const Content = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['text', 'image', 'video'],
+        enum: ['text', 'images', 'videos'],
         required: true
     },
     reference: {

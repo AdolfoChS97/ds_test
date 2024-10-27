@@ -21,7 +21,27 @@ const setTypeOfThemeContentSchema = joi.object({
     }),
 })
 
+const saveContentSchema = joi.object({
+    title: joi.string().required().messages({
+        'string.base': 'Title must be a string',
+        'string.empty': 'Title cannot be an empty field',
+    }),
+    type: joi.string().valid('text', 'images', 'videos').required().messages({
+        'any.only': 'Type must be either text, image or video',
+        'string.base': 'Type must be a string',
+    }),
+    reference: joi.string().required().messages({
+        'string.base': 'Reference must be a string',
+        'string.empty': 'Reference cannot be an empty field',
+    }),
+    theme: joi.string().required().messages({
+        'string.base': 'Theme must be a string',
+        'string.empty': 'Theme cannot be an empty field',
+    })
+})
+
 module.exports = {
     createThemeSchema,
-    setTypeOfThemeContentSchema
+    setTypeOfThemeContentSchema,
+    saveContentSchema
 }

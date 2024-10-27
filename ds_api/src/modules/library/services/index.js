@@ -1,6 +1,16 @@
 const Theme = require('../schemas/Theme')
+const Content = require('../schemas/Content')
 const ObjectId = require('mongoose').Types.ObjectId
-const { CONFLICT, INTERNAL_SERVER_ERROR, NOT_FOUND } = require('../../../shared/constants')
+const { 
+    CONFLICT, 
+    INTERNAL_SERVER_ERROR, 
+    NOT_FOUND, 
+    BAD_REQUEST,
+    BASE64_IMG_REGEX,
+    BASE64_TXT_REGEX,
+    BASE64_VIDEO_REGEX, 
+    contentTable
+} = require('../../../shared/constants')
 
 async function saveTheme({ reference, type }) {
     try {
@@ -15,8 +25,8 @@ async function saveTheme({ reference, type }) {
         }
 
         const error = new Error(e?.message || 'Error creating theme')
-        error.status = INTERNAL_SERVER_ERROR
         error.code = 1      
+        error.status = INTERNAL_SERVER_ERROR
         throw error
     }
 }
@@ -44,7 +54,57 @@ async function setTypeOfContent({ canSave, themeId }) {
     }
 }
 
+async function getTheme(themeId) {
+    try {
+        const theme  = await Theme.findOne({ _id: new ObjectId(themeId), deletedAt: null, canSave: { $exists: true } })
+        if(!theme) {
+            const error = new Error('Theme not found')
+            error.status = NOT_FOUND
+            error.code = 1
+            throw error
+        }
+        return theme
+    } catch (e) {
+        const error = new Error(e?.message || 'Error getting type of theme')
+        error.status = e?.status || INTERNAL_SERVER_ERROR
+        throw error
+    }
+}
+
+async function saveThemeContent({ title, type, reference, theme }, owner) {
+    try {
+        const t = await getTheme(theme);
+        const isValidContent = contentTable[type](reference);
+        if(t.canSave !== type || !isValidContent) {
+            const error = new Error('Theme content couldnt be saved by this type')
+            error.status = BAD_REQUEST
+            error.code = 1
+            throw error
+        }
+        const created = await Content.create({ title, type, reference, theme, credits: owner })
+        created['theme'] = t
+        return created
+    } catch (e) {
+        const error = new Error(e?.message || 'Error saving theme content')
+        error.status = e?.status || INTERNAL_SERVER_ERROR
+        throw error        
+    }
+}
+
+async function getThemesContent() {
+    try {
+        const content = await Content.find({ deletedAt: null }).populate('theme')
+        return content
+    } catch (e) {
+        const error = new Error(e?.message || 'Error getting themes content')
+        error.status = e?.status || INTERNAL_SERVER_ERROR
+        throw error
+    }
+}
+
 module.exports = {
     saveTheme, 
-    setTypeOfContent
+    setTypeOfContent,
+    saveThemeContent,
+    getThemesContent
 }
