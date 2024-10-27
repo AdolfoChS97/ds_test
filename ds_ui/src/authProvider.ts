@@ -1,24 +1,53 @@
+import axios from 'axios';
 import type { AuthProvider } from "@refinedev/core";
+console.log(import.meta.env);
+axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
-export const TOKEN_KEY = "refine-auth";
 
 export const authProvider: AuthProvider = {
-  login: async ({ username, email, password }) => {
-    if ((username || email) && password) {
-      localStorage.setItem(TOKEN_KEY, username);
+  login: async ({ email, password }) => {
+    const response = await axios.post<{ data: { accessToken: string }, code: number }>('/auth/login', {
+      email,
+      password,
+    });
+    if (response.data.code === 0) {
+      localStorage.setItem("access_token", response?.data?.data?.accessToken);
+      return {
+        success: true,
+        redirectTo: "/home",
+      };
+    } else {
+      return {
+        success: false,
+        error: {
+          name: "LoginError",
+          message: "Invalid username or password",
+        },
+      };
+    }
+  },
+  register: async ({ username, email, password, role }) => {
+    const response = await axios.post<{ data: any, code: number }>('/auth/register', {
+      username,
+      email,
+      password,
+      role
+    });
+
+    if (response?.data?.code === 0) {
       return {
         success: true,
         redirectTo: "/",
       };
+    } else {
+      return {
+        success: false,
+        error: {
+          name: "RegisterError",
+          message: "Could not register user",
+        },
+      }
     }
-
-    return {
-      success: false,
-      error: {
-        name: "LoginError",
-        message: "Invalid username or password",
-      },
-    };
   },
   logout: async () => {
     localStorage.removeItem(TOKEN_KEY);
@@ -28,13 +57,12 @@ export const authProvider: AuthProvider = {
     };
   },
   check: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
       return {
         authenticated: true,
       };
     }
-
     return {
       authenticated: false,
       redirectTo: "/login",
