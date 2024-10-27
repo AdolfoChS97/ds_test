@@ -22,7 +22,7 @@ async function authenticate({ email, password }) {
     try {
         const user = await User.findOne({ email }).select('+password')
         if(!user) {
-            const error = new Error('User not found')
+            const error = new Error('Invalid credetials')
             error.status = NOT_FOUND
             error.code = 1
             throw error

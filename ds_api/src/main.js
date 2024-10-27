@@ -7,9 +7,7 @@ const modules = require('./modules')
 const port = process.env.APP_PORT
 const app = express()
 
-app.use(cors({
-  origin: ['*']
-}))
+app.use(cors())
 app.use(express.json())
 app.use('/api/v1', modules)
 
