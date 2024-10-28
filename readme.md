@@ -65,6 +65,18 @@ Antes de empezar, asegúrate de tener [FNM](https://github.com/Schniz/fnm) insta
    cp .env.example .env
    ```
 
+
+## Recursos de Postman
+
+En la carpeta `postman`, encontrarás los recursos necesarios para importar los requests y el environment necesario para probar la API. 
+
+1. **Importar la Colección de Requests**:
+   - Abre Postman.
+   - Haz clic en "Import" y selecciona el archivo `requests.json`.
+
+2. **Importar el Environment**:
+   - Haz clic en "Import" y selecciona el archivo `environment.json`.
+
 ### Para la Aplicación React (`ds_ui`)
 
 1. Navega a la carpeta de la aplicación:
